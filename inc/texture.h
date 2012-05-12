@@ -16,10 +16,10 @@ typedef struct texture_s texture_t;
 /// A single 2d texture used for drawing (basically a sprite)
 struct texture_s
 {
-	GLubyte*	data;				///< the raw image data of the texture
-	int				width;			///< the width of the texture
-	int				height; 		///< the height of the texture
-	bool			has_alpha;	///< true if the texture has alpha values
+  GLubyte*  data;       ///< the raw image data of the texture
+  int       width;      ///< the width of the texture
+  int       height;     ///< the height of the texture
+  bool      has_alpha;  ///< true if the texture has alpha values
 };
 
 // -----------------
@@ -27,15 +27,15 @@ struct texture_s
 // -----------------
 
 /// creates a new uninitialized texture
-texture_t*	texture_new();
+texture_t*  texture_new();
 
 /// loads texture data from a file
-bool				texture_load(texture_t* texture, char* path);
+bool        texture_load(texture_t* texture, char* path);
 
 /// Deletes a texture, freeing all resources associated with it
-void				texture_delete(texture_t* texture);
+void        texture_delete(texture_t* texture);
 
 /// Draws the texture at the supplied coordinates
-void				texture_draw(texture_t* texture, int x, int y);
+void        texture_draw(texture_t* texture, int x, int y);
 
 #endif
