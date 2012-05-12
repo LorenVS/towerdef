@@ -1,0 +1,10 @@
+--- Towerdef ---
+
+A simple tower defence game in C for linux
+which will be used as a teaching for tool between
+myself and some friends of mine.
+
+While this project will probably be of relatively
+little value to anyone else, it is released under
+the apache 2.0 license as is to anyone who decides
+to use it
