@@ -1,6 +1,8 @@
 #ifndef _window_h
 #define _window_h
 
+/** @file */
+
 // -----------------
 // --- Constants ---
 // -----------------
