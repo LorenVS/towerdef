@@ -1,0 +1,51 @@
+# compiler flags
+CC=gcc --std=c99 -O3
+CFLAGS=-Iinc
+CLFLAGS=-lglut -lGLEW -lpng
+
+# directory settings
+SRCDIR=src
+INCDIR=inc
+BINDIR=bin
+OBJDIR=obj
+DEPDIR=deps
+RESDIR=res
+
+# file lists
+SOURCES_RAW=towerdef.c window.c texture.c
+SOURCES=$(addprefix $(SRCDIR)/, $(SOURCES_RAW))
+DEPS=$(subst $(SRCDIR)/,$(DEPDIR)/,$(SOURCES:.c=.d))
+OBJS=$(subst $(SRCDIR)/,$(OBJDIR)/,$(SOURCES:.c=.o))
+
+# main targets
+
+all: towerdef
+
+run: towerdef
+	bin/towerdef
+	
+towerdef: $(OBJS) resources
+	$(CC) $(CFLAGS) -o $(BINDIR)/towerdef $(OBJS) $(CLFLAGS)
+
+resources:
+	rsync -r $(RESDIR) $(BINDIR)
+
+clean:
+	rm -f $(DEPS)
+	rm -f $(OBJS)
+
+depend: $(DEPS)
+
+# dependency generation
+$(DEPDIR)/%.d: $(SRCDIR)/%.c
+	@set -e rm -r $@; \
+	$(CC) -MM $(CFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,$(OBJDIR)/\1.o $@ : , g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+# obj compilation
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+# dependency includes
+-include $(DEPS)
