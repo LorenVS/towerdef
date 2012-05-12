@@ -9,6 +9,7 @@ INCDIR=inc
 BINDIR=bin
 OBJDIR=obj
 DEPDIR=deps
+DOCDIR=docs
 RESDIR=res
 
 # file lists
@@ -16,6 +17,9 @@ SOURCES_RAW=towerdef.c window.c texture.c
 SOURCES=$(addprefix $(SRCDIR)/, $(SOURCES_RAW))
 DEPS=$(subst $(SRCDIR)/,$(DEPDIR)/,$(SOURCES:.c=.d))
 OBJS=$(subst $(SRCDIR)/,$(OBJDIR)/,$(SOURCES:.c=.o))
+
+HEADERS_RAW=towerdef.h window.h texture.h util.h
+HEADERS=$(addprefix $(INCDIR)/, $(HEADERS_RAW))
 
 # main targets
 
@@ -33,8 +37,12 @@ resources:
 clean:
 	rm -f $(DEPS)
 	rm -f $(OBJS)
+	rm -rf $(DOCDIR)
 
 depend: $(DEPS)
+
+docs: $(HEADERS)
+	doxygen doxygen.conf
 
 # dependency generation
 $(DEPDIR)/%.d: $(SRCDIR)/%.c
