@@ -25,15 +25,6 @@ HEADERS=$(addprefix $(INCDIR)/, $(HEADERS_RAW))
 
 all: towerdef
 
-run: towerdef
-	bin/towerdef
-	
-towerdef: $(OBJS) resources
-	$(CC) $(CFLAGS) -o $(BINDIR)/towerdef $(OBJS) $(CLFLAGS)
-
-resources:
-	rsync -r $(RESDIR) $(BINDIR)
-
 clean:
 	rm -f $(DEPS)
 	rm -f $(OBJS)
@@ -43,6 +34,15 @@ depend: $(DEPS)
 
 docs: $(HEADERS)
 	doxygen doxygen.conf
+
+resources:
+	rsync -r $(RESDIR) $(BINDIR)
+
+run: towerdef
+	bin/towerdef
+	
+towerdef: $(OBJS) resources
+	$(CC) $(CFLAGS) -o $(BINDIR)/towerdef $(OBJS) $(CLFLAGS)
 
 # dependency generation
 $(DEPDIR)/%.d: $(SRCDIR)/%.c
