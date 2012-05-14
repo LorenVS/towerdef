@@ -14,12 +14,32 @@ typedef struct  wave_s        wave_t;
 typedef struct  spawn_s       spawn_t;
 typedef enum    tile_type_e   tile_type_t;
 typedef struct  tile_s        tile_t;
-typedef enum    tower_type_e  tower_type_t;
-typedef struct  tower_s       tower_t;
 typedef enum    creep_type_e  creep_type_t;
 typedef struct  creep_s       creep_t;
 typedef enum    bullet_type_e bullet_type_t;
 typedef struct  bullet_s      bullet_t;
+
+// -------------
+// --- Enums ---
+// -------------
+
+/// The possible types of tile
+enum tile_type_e
+{
+	TILE_TYPE_GRASS ///< A grass tile
+};
+
+/// The possible types of creep
+enum creep_type_e
+{
+	CREEP_TYPE_BASIC ///< A basic creep
+};
+
+/// The possible types of bullet
+enum bullet_type_e
+{
+	BULLET_TYPE_BAISC ///< A basic bullet
+};
 
 // -----------
 // --- Map ---
@@ -28,10 +48,10 @@ typedef struct  bullet_s      bullet_t;
 /// A map in the towerdef game
 struct map_s
 {
-  int         width;      ///< The width of the map
-  int         height;     ///< The height of the map
+  int32_t     width;      ///< The width of the map
+  int32_t     height;     ///< The height of the map
   tile_t      **tiles;    ///< A 2d array of tiles in the map
-  int         path_count; ///< The number of creep paths in the map
+  int32_t     path_count; ///< The number of creep paths in the map
   path_t      *paths;     ///< The creep paths in the map
   program_t   *program;   ///< The program used to generate creeps
   
@@ -121,50 +141,20 @@ void    spawn_delete(spawn_t* spawn);
 // --- Tile ---
 // ------------
 
-/// The possible types of tile
-enum tile_type_e
-{
-  TILE_TYPE_GRASS   ///< A grass tile
-};
-
 /// A single tile on a map
 struct tile_s
 {
-  tile_type_e   tile_type;  ///< The type of tile
-};
-
-// -------------
-// --- Tower ---
-// -------------
-
-/// The possible types of tower
-enum tower_type_e
-{
-  TOWER_TYPE_BASIC  ///< A basic tower
-};
-
-/// A single tower on a map
-struct tower_s
-{
-  tower_type_t  tower_type; ///< The type of tower
-  int           x_coord;    ///< The x coordinate of the tower
-  int           y_coord;    ///< The y coordinate of the tower
+  tile_type_t   tile_type;  ///< The type of tile
 };
 
 // -------------
 // --- Creep ---
 // -------------
 
-/// The possible types of creep
-enum creep_type_e
-{
-  CREEP_TYPE_BASIC  ///< A basic creep
-};
-
 /// A single creep on a map
 struct creep_s
 {
-  creep_type_e    creep_type;   ///< The type of creep
+  creep_type_t    creep_type;   ///< The type of creep
   path_t*         path;         ///< The path that the creep spawned on
   int             x_coord;      ///< The current x coordinate of the creep
   int             y_coord;      ///< The current y coordinate of the creep
@@ -174,16 +164,10 @@ struct creep_s
 // --- Bullet ---
 // --------------
 
-/// The possible types of bullet
-enum bullet_type_e
-{
-  BULLET_TYPE_BASIC ///< A basic bullet
-};
-
 /// A single bullet on a map
 struct bullet_s
 {
-  bullet_type_e   bullet_type;    ///< The type of bullet
+  bullet_type_t   bullet_type;    ///< The type of bullet
   int             x_coord;        ///< The x coordinate of the bullet
   int             y_coord;        ///< The y coordinate of the bullet
 };
