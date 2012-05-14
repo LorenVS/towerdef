@@ -4,22 +4,47 @@
 #include<stdlib.h>
 #include "geometry.h"
 
+// --------------
+// --- Macros ---
+// --------------
+
+#define GEOMETRY_CONSTRUCTOR(S,T) S_t* S_new() { \
+	geometry_t* geo = malloc(sizeof(S_t)); \
+	die(geo == NULL, "Error allocating new " #T " object"); \
+	geo->geometry_type = GEOMETRY_TYPE_T; \
+	return geo; \
+}
+
+#define GEOMETRY_ARG_ASSERT(A, T) \
+	assert(A != NULL); \
+	assert(A->base.geometry_type = GEOMETRY_TYPE_T);
+
+
 // ----------------------------
 // --- Forward Declarations ---
 // ----------------------------
 
-typedef bool(*intersection_handler)(shape_t*, point_t*, shape_t*, point_t*);
-static bool intersects_circle_circle(shape_t*, point_t*, shape_t*, point_t*);
-static bool intersects_square_square(shape_t*, point_t*, shape_t*, point_t*);
-static bool intersects_circle_square(shape_t*, point_t*, shape_t*, point_t*);
+typedef bool(*intersection_handler)		(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_point_point		(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_lineseg_lineseg(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_circle_circle	(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_square_square	(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_point_lineseg	(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_point_circle		(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_point_square		(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_lineseg_circle (geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_lineseg_square	(geometry_t*, point_t*, geometry_t*, point_t*);
+static bool int_circle_square	(geometry_t*, point_t*, geometry_t*, point_t*);
 
 // ---------------------------------
 // --- Intersection Lookup Table ---
 // ---------------------------------
 
 intersection_handler intersection_lookup_table[][] = {
-	{ intersects_circle_circle, intersects_circle_square },
-	{ NULL, 										intersects_square_square }
+	{ int_point_point, 	int_point_lineseg, 		int_point_circle, 	int_point_square 		},
+	{ NULL,							int_lineseg_lineseg,	int_lineseg_circle,	int_lineseg_square 	},
+	{ NULL,							NULL,									int_circle_circle,	int_circle_square		},
+	{ NULL,							NULL,									NULL,								int_square_square		}
 };
 
 // -------------
@@ -33,31 +58,60 @@ void point_init(point_t* point, int x, int y)
 	point->y = y;
 }
 
-// -------------
-// --- Shape ---
-// -------------
+// ----------------
+// --- Geometry ---
+// ----------------
 
-void shape_delete(shape_t* shape)
+void geometry_destroy(geometry_t* geometry)
 {
-	assert(shape != NULL);
+	assert(geometry != NULL);
 
-	switch(shape->shape_type) {
-		case SHAPE_TYPE_CIRCLE:
-			shape_circle_delete(shape);
+	switch(geometry->geometry_type) {
+		case GEOMETRY_TYPE_POINT:
+			geometry_point_destroy((geometry_point_t*)geometry);
 			break;
-		case SHAPE_TYPE_SQUARE:
-			shape_square_delete(shape);
+		case GEOMETRY_TYPE_LINESEG:
+			geometry_lineseg_destroy((geometry_lineseg_t*)geometry);
 			break;
-		case SHAPE_TYPE_COMPLEX:
-			shape_complex_delete(shape);
+		case GEOMETRY_TYPE_CIRCLE:
+			geometry_circle_destroy((geometry_circle_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_SQUARE:
+			geometry_square_destroy((geometry_square_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_COMPLEX:
+			geometry_complex_destroy((geometry_complex_t*)geometry);
 			break;
 	}
 }
 
-bool shape_intersects(shape_t* shape1, point_t* offset1, shape_t* shape2, point_t* offset2)
+void geometry_delete(geometry_t* geometry)
 {
-	assert(shape1 != NULL);
-	assert(shape2 != NULL);
+	assert(geometry != NULL);
+
+	switch(geometry->geometry_type) {
+		case GEOMETRY_TYPE_POINT:
+			geometry_point_delete((geometry_point_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_LINESEG:
+			geometry_lineseg_delete((geometry_lineseg_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_CIRCLE:
+			geometry_circle_delete((geometry_circle_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_SQUARE:
+			geometry_square_delete((geometry_square_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_COMPLEX:
+			geometry_complex_delete((geometry_complex_t*)geometry);
+			break;
+	}
+}
+
+bool geometry_intersects(geometry_t* geometry1, point_t* offset1, geometry_t* geometry2, point_t* offset2)
+{
+	assert(geometry1 != NULL);
+	assert(geometry2 != NULL);
 
 	point_t stack_offset1;
 	point_t stack_offset2;
@@ -72,18 +126,18 @@ bool shape_intersects(shape_t* shape1, point_t* offset1, shape_t* shape2, point_
 		offset2 = &stack_offset2;
 	}
 
-	if(shape1->shape_type == SHAPE_TYPE_COMPLEX){
-		for(int i = 0; i < shape1->component_count; i++){
-			shape_t* component = shape1->components[i];
-			if(shape_intersects(component, offset1, shape2, offset2))
+	if(geometry1->geometry_type == GEOMETRY_TYPE_COMPLEX){
+		for(int i = 0; i < geometry1->component_count; i++){
+			geometry_t* component = geometry1->components[i];
+			if(geometry_intersects(component, offset1, geometry2, offset2))
 				return true;	
 		}
 		return false;
 	}
-	else if(shape2->shape_type == SHAPE_TYPE_COMPLEX){
-		for(int i = 0; i < shape2->component_count; i++){
-			shape_t* component = shape2->components[i];
-			if(shape_intersects(shape1, offset1, component, offset2))
+	else if(geometry2->geometry_type == GEOMETRY_TYPE_COMPLEX){
+		for(int i = 0; i < geometry2->component_count; i++){
+			geometry_t* component = geometry2->components[i];
+			if(geometry_intersects(geometry1, offset1, component, offset2))
 				return true;
 		}
 		return false;
@@ -93,34 +147,107 @@ bool shape_intersects(shape_t* shape1, point_t* offset1, shape_t* shape2, point_
 	}
 }
 
+geometry_t*	geometry_clone(geometry_t* geometry)
+{
+	assert(geometry != NULL);	
+	geometry_t* clone = NULL;
+
+	switch(geometry->geometry_type)
+	{
+		case GEOMETRY_TYPE_POINT:
+			clone = geometry_point_clone((geometry_point_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_LINESEG:
+			clone = geometry_lineseg_clone((geometry_lineseg_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_CIRCLE:
+			clone = geometry_circle_clone((geometry_circle_t*)geometry);
+			break;
+		case GEOMETRY_TYPE_SQUARE:
+			clone = geometry_square_clone((geometry_square_t*)geometry);
+			break;
+	}
+	
+	return clone;
+}
+
+// -------------
+// --- Point ---
+// -------------
+
+GEOMETRY_CONSTRUCTOR(geometry_point, POINT);
+
+void geometry_point_init(geometry_point_t* point, int32_t x, int32_t y)
+{
+	GEOMETRY_ARG_ASSERT(point, POINT);
+
+	point->x = x;
+	point->y = y;
+}
+
+void geometry_point_destroy(geometry_point_t* point)
+{
+	GEOMETRY_ARG_ASSERT(point, POINT);
+}
+
+void geometry_point_delete(geometry_point_t* point)
+{
+	GEOMETRY_ARG_ASSERT(point, POINT);
+	free(point);
+}
+
+void geometry_point_clone(geometry_point_t* point)
+{
+	GEOMETRY_ARG_ASSERT(point, POINT);
+	
+	geometry_point_t* clone = geometry_point_new();
+	geometry_point_init(clone, point->x, point->y);
+	return clone;
+}
+
+void geometry_point_copy(geometry_point_t* source, geometry_point_t* dest)
+{
+	GEOMETRY_ARG_ASSERT(source, POINT);
+	geometry_point_init(dest, source->x, source->y);
+}
+
+// --------------------
+// --- Line Segment ---
+// --------------------
+
+GEOMETRY_CONSTRUCTOR(geometry_lineseg, LINESEG);
+
+void geometry_lineseg_init(geometry_lineseg_t* lineseg, int x1, int y1, int x2, int y2)
+{
+	assert(lineseg != NULL);
+
+	lineseg->base.geometry_type = GEOMETRY_TYPE_LINESEG;
+	
+}
+
+
 // --------------
 // --- Circle ---
 // --------------
 
-shape_t* shape_circle_new()
-{
-	shape_t* shape = malloc(sizeof(shape_circle_t));
-	die(shape == NULL, "Failed to allocate circle object");
-	shape->shape_type = SHAPE_TYPE_CIRCLE;
-	return shape;
-}
+GEOMETRY_CONSTRUCTOR(geometry_circle, CIRCLE)
 
-void shape_circle_init(shape_t* shape, int32_t x_coord, int32_t y_coord, int32_t radius)
+void geometry_circle_init(geometry_t* geometry, int32_t x_coord, int32_t y_coord, int32_t radius)
 {
-	assert(shape != NULL);
-	assert(shape->shape_type == SHAPE_TYPE_CIRCLE);
-	shape_circle_t* circle = (shape_circle_t*)shape;
+	assert(geometry != NULL);
+	assert(geometry->geometry_type == GEOMETRY_TYPE_CIRCLE);
+	geometry_circle_t* circle = (geometry_circle_t*)geometry;
 
 	circle->x_coord = x_coord;
 	circle->y_coord = y_coord;
 	circle->radius = radius;
 }
 
-void shape_circle_delete(shape_t* shape)
+void geometry_circle_delete(geometry_t* geometry)
 {
-	assert(shape != NULL);
-	assert(shape->shape_type == SHAPE_TYPE_CIRCLE);
-	shape_circle_t* circle = (shape_circle_t*)shape;
+	assert(geometry != NULL);
+	assert(geometry->geometry_type == GEOMETRY_TYPE_CIRCLE);
+	geometry_circle_t* circle = (geometry_circle_t*)geometry;
 
 	free(circle);	
 }
@@ -129,30 +256,24 @@ void shape_circle_delete(shape_t* shape)
 // --- Square ---
 // --------------
 
-shape_t* shape_square_new()
-{
-	shape_t* shape = malloc(sizeof(shape_square_t));
-	die(shape == NULL, "Failed to allocate square object");
-	shape->shape_type = SHAPE_TYPE_SQUARE;
-	return shape;
-}
+GEOMETRY_CONSTRUCTOR(geometry_square, SQUARE);
 
-void shape_square_init(shape_t* shape, int32_t x_coord, int32_t y_coord, int32_t size)
+void geometry_square_init(geometry_t* geometry, int32_t x_coord, int32_t y_coord, int32_t size)
 {
-	assert(shape != NULL);
-	assert(shape->shape_type == SHAPE_TYPE_SQUARE);
-	shape_square_t* square = (shape_square_t*)shape;
+	assert(geometry != NULL);
+	assert(geometry->geometry_type == GEOMETRY_TYPE_SQUARE);
+	geometry_square_t* square = (geometry_square_t*)geometry;
 
 	square->x_coord = x_coord;
 	square->y_coord = y_coord;
 	square->size = size;
 }
 
-void shape_square_delete(shape_t* shape)
+void geometry_square_delete(geometry_t* geometry)
 {
-	assert(shape != NULL);	
-	assert(shape->shape_type == SHAPE_TYPE_SQUARE);
-	shape_square_t* square = (shape_square_t*)shape;
+	assert(geometry != NULL);	
+	assert(geometry->geometry_type == GEOMETRY_TYPE_SQUARE);
+	geometry_square_t* square = (geometry_square_t*)geometry;
 	
 	free(square);
 }
@@ -161,35 +282,35 @@ void shape_square_delete(shape_t* shape)
 // --- Complex ---
 // ---------------
 
-shape_t* shape_complex_new()
+geometry_t* geometry_complex_new()
 {
-	shape_t* shape = malloc(sizeof(shape_complex_t));
-	die(shape == NULL, "Failed to allocate complex shape object");
-	memset(shape, 0, sizeof(shape_complex_t));
-	shape->shape_type = SHAPE_TYPE_COMPLEX;
-	return shape;
+	geometry_t* geometry = malloc(sizeof(geometry_complex_t));
+	die(geometry == NULL, "Failed to allocate complex geometry object");
+	memset(geometry, 0, sizeof(geometry_complex_t));
+	geometry->geometry_type = GEOMETRY_TYPE_COMPLEX;
+	return geometry;
 }
 
-void shape_complex_init(shape_t* shape, int component_count)
+void geometry_complex_init(geometry_t* geometry, int component_count)
 {
-	assert(shape != NULL);
-	assert(shape->shape_type == SHAPE_TYPE_COMPLEX);
-	shape_complex_t* complex = (shape_complex_t*)shape;
+	assert(geometry != NULL);
+	assert(geometry->geometry_type == GEOMETRY_TYPE_COMPLEX);
+	geometry_complex_t* complex = (geometry_complex_t*)geometry;
 
 	complex->component_count = component_count;
 	complex->components = malloc(sizeof(*complex->components) * component_count);
 	die(complex->components == NULL, "Error allocating complex components array");
 }
 
-void shape_complex_delete(shape_t* shape)
+void geometry_complex_delete(geometry_t* geometry)
 {
-	assert(shape != NULL);
-	assert(shape->shape_type == SHAPE_TYPE_COMPLEX);
-	shape_complex_t* complex = (shape_complex_t*)shape;
+	assert(geometry != NULL);
+	assert(geometry->geometry_type == GEOMETRY_TYPE_COMPLEX);
+	geometry_complex_t* complex = (geometry_complex_t*)geometry;
 
 	if(complex->component_count > 0 && complex->components != NULL) {
 		for(int i = 0; i < complex->component_count; i++){
-			shape_delete(complex->components[i]);
+			geometry_delete(complex->components[i]);
 			complex->components[i] = NULL;
 		}
 	}
@@ -201,17 +322,17 @@ void shape_complex_delete(shape_t* shape)
 // --- Private Functions ---
 // -------------------------
 
-static bool intersects_circle_circle(shape_t* shape1, point_t* offset1, shape_t* shape2, point_t* offset2)
+static bool intersects_circle_circle(geometry_t* geometry1, point_t* offset1, geometry_t* geometry2, point_t* offset2)
 {
-	assert(shape1 != NULL);
+	assert(geometry1 != NULL);
 	assert(offset1 != NULL);
-	assert(shape2 != NULL);
+	assert(geometry2 != NULL);
 	assert(offset2 != NULL);
-	assert(shape1->shape_type = SHAPE_TYPE_CIRCLE);
-	assert(shape2->shape_type = SHAPE_TYPE_CIRCLE);
+	assert(geometry1->geometry_type = GEOMETRY_TYPE_CIRCLE);
+	assert(geometry2->geometry_type = GEOMETRY_TYPE_CIRCLE);
 	
-	shape_circle_t* circle1 = (shape_circle_t*)shape1;
-	shape_circle_t* circle2 = (shape_circle_t*)shape2;
+	geometry_circle_t* circle1 = (geometry_circle_t*)geometry1;
+	geometry_circle_t* circle2 = (geometry_circle_t*)geometry2;
 
 	int32_t total_r = circle1->radius + circle2->radius;
 	int32_t	delta_x = (circle1->x_coord + offset1->x) - (circle2->x_coord + offset2->x);
@@ -220,17 +341,17 @@ static bool intersects_circle_circle(shape_t* shape1, point_t* offset1, shape_t*
 	return dist > total_r;
 }
 
-static bool intersects_square_square(shape_t* shape1, point_t* offset1, shape_t* shape2, point_t* offset2)
+static bool intersects_square_square(geometry_t* geometry1, point_t* offset1, geometry_t* geometry2, point_t* offset2)
 {
-	assert(shape1 != NULL);
+	assert(geometry1 != NULL);
 	assert(offset1 != NULL);
-	assert(shape2 != NULL);
+	assert(geometry2 != NULL);
 	assert(offset2 != NULL);
-	assert(shape1->shape_type = SHAPE_TYPE_SQUARE);
-	assert(shape2->shape_type = SHAPE_TYPE_SQUARE);
+	assert(geometry1->geometry_type = GEOMETRY_TYPE_SQUARE);
+	assert(geometry2->geometry_type = GEOMETRY_TYPE_SQUARE);
 
-	shape_square_t* square1 = (shape_square_t*)shape1;
-	shape_square_t* square2 = (shape_square_t*)shape2;
+	geometry_square_t* square1 = (geometry_square_t*)geometry1;
+	geometry_square_t* square2 = (geometry_square_t*)geometry2;
 
 	int32_t x1 = square1->x_coord + offset1->x;
 	int32_t y1 = square1->y_coord + offset1->y;
@@ -248,7 +369,7 @@ static bool intersects_square_square(shape_t* shape1, point_t* offset1, shape_t*
 	return x_intersects && y_intersects;
 }
 
-static bool intersects_circle_square(shape_t* shape1, point_t* offset1, shape_t* shape2, point_t* offset2)
+static bool intersects_circle_square(geometry_t* geometry1, point_t* offset1, geometry_t* geometry2, point_t* offset2)
 {
 	
 }

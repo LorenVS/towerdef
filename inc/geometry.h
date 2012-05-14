@@ -5,123 +5,184 @@
 // --- Forward Declarations ---
 // ----------------------------
 
-typedef	struct	point_s						point_t;
-typedef enum    shape_type_e     	shape_type_t;
-typedef struct  shape_s          	shape_t;
-typedef struct  shape_circle_s   	shape_circle_t;
-typedef struct  shape_square_s   	shape_square_t;
-typedef struct  shape_complex_s  	shape_complex_t;
+typedef enum    geometry_type_e     	geometry_type_t;
+typedef struct  geometry_s          	geometry_t;
+typedef struct	geometry_point_s			geometry_point_t;
+typedef struct  geometry_circle_s   	geometry_circle_t;
+typedef struct  geometry_square_s   	geometry_square_t;
+typedef struct  geometry_complex_s  	geometry_complex_t;
+
+// ---------------------
+// --- Geometry Type ---
+// ---------------------
+
+/// The possible types of geometry
+enum geometry_type_e
+{
+	GEOMETRY_TYPE_POINT = 0,			///< A single point
+	GEOMETRY_TYPE_LINESEG = 1,		///< A line segment
+  GEOMETRY_TYPE_CIRCLE = 2,   	///< A circle
+  GEOMETRY_TYPE_SQUARE = 3,   	///< A square
+  GEOMETRY_TYPE_COMPLEX = 255,	///< A combination of geometrys
+};
+
+// ----------------
+// --- Geometry ---
+// ----------------
+
+struct geometry_s
+{
+  geometry_type_t    	geometry_type; ///< The type of geometry
+};
+
+/// Frees all resources associated with a geometry object
+void	geometry_destroy(geometry_t* geometry);
+
+/// Deletes a geometry object
+void  geometry_delete(geometry_t* geometry);
+
+/// Clones a geometry object
+geometry_t*	geometry_clone(geometry_t* geometry);
+
+/// Checks whether two geometrys intersect
+bool	geometry_intersects(geometry_t* geometry, point_t* offset, geometry_t* other, point_t* other_offset);
 
 // -------------
 // --- Point ---
 // -------------
 
 /// A two dimensional integer point
-struct point_s
+struct geometry_point_s
 {
-	int x;
-	int y;
+	geometry_t 	base;	// the base geometry object
+	int32_t 		x;		// the x coordinate of the point
+	int32_t 		y;		// the y coordinate of the point
 };
 
 /// Initializes a point to the supplied integer values
-void point_init(point_t* point, int x, int y);
+void geometry_point_init(geometry_point_t* point, int32_t x, int32_t y);
 
-// ------------------
-// --- Shape Type ---
-// ------------------
+/// Frees all resources associated with a point
+void geometry_point_destroy(geometry_point_t* point);
 
-/// The possible types of shape
-enum shape_type_e
+/// Deletes a point object
+void geometry_point_delete(geometry_point_t* point);
+
+/// Clones a point object
+geometry_point_t*	geometry_point_clone(geometry_point_t* point);
+
+/// Copies a point object to another
+void geometry_point_copy(geometry_point_t* source, geometry_point_t* dest);
+
+// --------------------
+// --- Line Segment ---
+// --------------------
+
+/// A line segment between two points
+void geometry_lineseg_s
 {
-  SHAPE_TYPE_CIRCLE = 0,   	///< A circle
-  SHAPE_TYPE_SQUARE = 1,   	///< A square
-  SHAPE_TYPE_COMPLEX = 255,	///< A combination of shapes
+	geometry_t				base; /// the base geometry object
+	geometry_point_t	p1;		///< the first point
+	geometry_point_t	p2; 	///< the second point
 };
 
-// -------------
-// --- Shape ---
-// -------------
+/// initializes a lineseg object with the supplied values
+void geometry_lineseg_init(geometry_lineseg_t* lineseg, int x1, int y1, int x2, int y2);
 
-struct shape_s
-{
-  shape_type_t    shape_type; ///< The type of shape
-};
+/// initializes a lineseg object with the supplied values
+void geometry_lineseg_init2(geometry_lineseg_t* lineseg, geometry_point_t p1, geometry_point_t p2);
 
-/// Deletes a shape object, freeing all resources associated with it
-void  shape_delete(shape_t* shape);
+/// Frees all resources associated with a lineseg
+void geometry_lineseg_destroy(geometry_lineseg_t* lineseg);
 
-/// Checks whether two shapes intersect
-bool	shape_intersects(shape_t* shape, point_t* offset, shape_t* other, point_t* other_offset);
+/// Deletes a lineseg object
+void geometry_lineseg_delete(geometry_lineseg_t* lineseg);
+
+/// Clones a lineseg object
+geometry_lineseg_t* geometry_lineseg_clone(geometry_lineseg_t* lineseg);
+
+/// Copies a lineseg object to another
+void geometry_lineseg_copy(geometry_lineseg_t* source, geometry_lineseg_t* dest);
+
 
 // --------------
 // --- Circle ---
 // --------------
 
-struct shape_circle_s
+struct geometry_circle_s
 {
-  shape_t base;       ///< The base shape object
+  geometry_t base;    ///< The base geometry object
   int32_t x_coord;    ///< The X coordinate of the circle
   int32_t y_coord;    ///< The Y coordinate of the circle
   int32_t radius;     ///< The radius of the circle
 };
 
 /// Creates a new uninitialized circle object
-shape_t* 	shape_circle_new();
+geometry_circle_t* 	geometry_circle_new();
 
 /// Initializes a circle object with the supplied values
-void     	shape_circle_init(shape_t* shape, int32_t x_coord, int32_t y_coord, int32_t radius);
+void     	geometry_circle_init(geometry_circle_t* circle, int32_t x_coord, int32_t y_coord, int32_t radius);
 
 /// Deletes a circle object, freeing all reources associated with it
-void     	shape_circle_delete(shape_t* shape);
+void     	geometry_circle_delete(geometry_circle_t* geometry);
 
-/// Checks whether a circle intersects another shape
-bool			shape_circle_intersects(shape_t* shape, point_t* offset, shape_t* other, point_t* other_offset);
+/// Clones a circle object
+geometry_circle_t*	geometry_circle_clone(geometry_circle_t* circle);
+
+/// Copies a circle object to another
+void			geometry_circle_copy(geometry_circle_t* source, geometry_circle_t* dest);
 
 // --------------
 // --- Square ---
 // --------------
 
-struct shape_square_s
+struct geometry_square_s
 {
-	shape_t base;			///< The base shape object
+	geometry_t base;	///< The base geometry object
 	int32_t x_coord;	///< The x coordinate of the square
 	int32_t y_coord;	///< The y coordinate of the square
 	int32_t	size;			///< The size of the square
 	};
 
 /// Creates a new uninitialized square object
-shape_t* 	shape_square_new();
+geometry_square_t* 	geometry_square_new();
 
 /// Initializes a square object with the supplied values
-void			shape_square_init(shape_t* shape, int x_coord, int y_coord, int size);
+void			geometry_square_init(geometry_square_t* geometry, int x_coord, int y_coord, int size);
 
 /// Deletes a square object, freeing all resources associated with it
-void			shape_square_delete(shape_t* shape);
+void			geometry_square_delete(geometry_square_t* geometry);
 
-/// Checks to see if a square intersects another shape
-bool			shape_square_intersects(shape_t* shape, point_t* offset, shape_t* other, point_t* other_offset);
+/// Clones a square object
+geometry_square_t* geometry_square_clone(geometry_square_t* square);
+
+/// Copies a square object to another
+void geometry_square_copy(geometry_square_t* source, geometry_square_t* dest);
 
 // ---------------
 // --- Complex ---
 // ---------------
 
-struct shape_complex_s
+struct geometry_complex_s
 {
-	shape_t		base;							///< The base shape object
-	int32_t		component_count;	///< The number of shape components
-	shape_t** components;				///< The component shapes
+	geometry_t		base;					///< The base geometry object
+	int32_t		component_count;	///< The number of geometry components
+	geometry_t** components;		///< The component geometrys
 };
 
-/// Creates a new uninitialized complex shape
-shape_t*	shape_complex_new();
+/// Creates a new uninitialized complex geometry
+geometry_complex_t*	geometry_complex_new();
 
-/// Initializes a complex shape with the supplied values
-void			shape_complex_init(shape_t* shape, int component_count);
+/// Initializes a complex geometry with the supplied values
+void			geometry_complex_init(geometry_complex_t* complex, int component_count);
 
-/// Deletes a complex shape
-void 			shape_complex_delete(shape_t* shape);
+/// Deletes a complex geometry
+void 			geometry_complex_delete(geometry_complex_t* complex);
 
-/// Checks to see whether a complex shape intersects another shape
-void			shape_complex_intersects(shape_t* shape, point_t* offset, shape_t* other, point_t* other_offset);
+/// Clones a complex geometry object
+geometry_complex_t* geometry_complex_clone(geometry_complex_t* complex);
+
+/// Copies a complex geometry object to another
+geometry_complex_t* geometry_complex_copy(geometry_complex_t* source, geometry_complex_t* dest);
 
 #endif
