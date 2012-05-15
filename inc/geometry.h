@@ -8,6 +8,7 @@
 typedef enum    geometry_type_e     	geometry_type_t;
 typedef struct  geometry_s          	geometry_t;
 typedef struct	geometry_point_s			geometry_point_t;
+typedef	struct	geometry_lineseg_s		geometry_lineseg_t;
 typedef struct  geometry_circle_s   	geometry_circle_t;
 typedef struct  geometry_square_s   	geometry_square_t;
 typedef struct  geometry_complex_s  	geometry_complex_t;
@@ -45,7 +46,7 @@ void  geometry_delete(geometry_t* geometry);
 geometry_t*	geometry_clone(geometry_t* geometry);
 
 /// Checks whether two geometrys intersect
-bool	geometry_intersects(geometry_t* geometry, point_t* offset, geometry_t* other, point_t* other_offset);
+bool	geometry_intersects(geometry_t* geometry, geometry_point_t* offset, geometry_t* other, geometry_point_t* other_offset);
 
 // -------------
 // --- Point ---
@@ -79,7 +80,7 @@ void geometry_point_copy(geometry_point_t* source, geometry_point_t* dest);
 // --------------------
 
 /// A line segment between two points
-void geometry_lineseg_s
+struct geometry_lineseg_s
 {
 	geometry_t				base; /// the base geometry object
 	geometry_point_t	p1;		///< the first point
@@ -90,7 +91,7 @@ void geometry_lineseg_s
 void geometry_lineseg_init(geometry_lineseg_t* lineseg, int x1, int y1, int x2, int y2);
 
 /// initializes a lineseg object with the supplied values
-void geometry_lineseg_init2(geometry_lineseg_t* lineseg, geometry_point_t p1, geometry_point_t p2);
+void geometry_lineseg_init2(geometry_lineseg_t* lineseg, geometry_point_t* p1, geometry_point_t* p2);
 
 /// Frees all resources associated with a lineseg
 void geometry_lineseg_destroy(geometry_lineseg_t* lineseg);
@@ -111,10 +112,9 @@ void geometry_lineseg_copy(geometry_lineseg_t* source, geometry_lineseg_t* dest)
 
 struct geometry_circle_s
 {
-  geometry_t base;    ///< The base geometry object
-  int32_t x_coord;    ///< The X coordinate of the circle
-  int32_t y_coord;    ///< The Y coordinate of the circle
-  int32_t radius;     ///< The radius of the circle
+  geometry_t base;    			///< The base geometry object
+  geometry_point_t	origin; ///< The origin of the circle
+	int32_t radius;     			///< The radius of the circle
 };
 
 /// Creates a new uninitialized circle object
@@ -123,7 +123,13 @@ geometry_circle_t* 	geometry_circle_new();
 /// Initializes a circle object with the supplied values
 void     	geometry_circle_init(geometry_circle_t* circle, int32_t x_coord, int32_t y_coord, int32_t radius);
 
-/// Deletes a circle object, freeing all reources associated with it
+/// Initializes a circle object with the supplied values
+void			geometry_circle_init2(geometry_circle_t* circle, geometry_point_t* origin, int32_t radius);
+
+/// Frees all resources associated with a circle object
+void			geometry_circle_destroy(geometry_circle_t* circle);
+
+/// Deletes a circle object
 void     	geometry_circle_delete(geometry_circle_t* geometry);
 
 /// Clones a circle object
@@ -148,10 +154,13 @@ struct geometry_square_s
 geometry_square_t* 	geometry_square_new();
 
 /// Initializes a square object with the supplied values
-void			geometry_square_init(geometry_square_t* geometry, int x_coord, int y_coord, int size);
+void			geometry_square_init(geometry_square_t* square, int x_coord, int y_coord, int size);
+
+/// Frees all resources associated with a square object
+void			geometry_square_destroy(geometry_square_t* square);
 
 /// Deletes a square object, freeing all resources associated with it
-void			geometry_square_delete(geometry_square_t* geometry);
+void			geometry_square_delete(geometry_square_t* square);
 
 /// Clones a square object
 geometry_square_t* geometry_square_clone(geometry_square_t* square);
@@ -176,6 +185,9 @@ geometry_complex_t*	geometry_complex_new();
 /// Initializes a complex geometry with the supplied values
 void			geometry_complex_init(geometry_complex_t* complex, int component_count);
 
+/// Frees all resources associated with a complex geometry
+void			geometry_complex_destroy(geometry_complex_t* complex);
+
 /// Deletes a complex geometry
 void 			geometry_complex_delete(geometry_complex_t* complex);
 
@@ -183,6 +195,6 @@ void 			geometry_complex_delete(geometry_complex_t* complex);
 geometry_complex_t* geometry_complex_clone(geometry_complex_t* complex);
 
 /// Copies a complex geometry object to another
-geometry_complex_t* geometry_complex_copy(geometry_complex_t* source, geometry_complex_t* dest);
+void geometry_complex_copy(geometry_complex_t* source, geometry_complex_t* dest);
 
 #endif
