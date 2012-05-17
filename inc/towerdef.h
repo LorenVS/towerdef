@@ -7,7 +7,6 @@
 // --- Forward Declarations ---
 // ----------------------------
 
-typedef struct  map_s         map_t;
 typedef struct  path_s        path_t;
 typedef struct  program_s     program_t;
 typedef struct  wave_s        wave_t;
@@ -33,32 +32,10 @@ enum bullet_type_e
 	BULLET_TYPE_BAISC ///< A basic bullet
 };
 
-// -----------
-// --- Map ---
-// -----------
+// ------------
+// --- Path ---
+// ------------
 
-/// A map in the towerdef game
-struct map_s
-{
-  int32_t     width;      ///< The width of the map
-  int32_t     height;     ///< The height of the map
-  tile_t      **tiles;    ///< A 2d array of tiles in the map
-  int32_t     path_count; ///< The number of creep paths in the map
-  path_t      *paths;     ///< The creep paths in the map
-  program_t   *program;   ///< The program used to generate creeps
-  
-};
-
-/// Creates a new uninitialized map object
-map_t*    map_new();
-
-/// Deletes a map object, freeing all resources associated with it
-void      map_delete(map_t* map);
-
-/// Loads a map from the supplied path
-void      map_load(map_t* map, reader_t* path);
-
-/// A linked-list of path coordinates that form a creep path
 struct path_s
 {
   int     x;    ///< The x coordinate of this entry in the path
