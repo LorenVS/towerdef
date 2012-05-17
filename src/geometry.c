@@ -414,17 +414,17 @@ void geometry_complex_copy(geometry_complex_t* source, geometry_complex_t* dest)
 // --- Private Functions ---
 // -------------------------
 
-static bool intersects_point_point(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
+static bool int_point_point(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
 {
 	return false;
 }
 
-static bool intersects_lineseg_lineseg(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
+static bool int_lineseg_lineseg(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
 {
 	return false;
 }
 
-static bool intersects_circle_circle(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
+static bool int_circle_circle(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
 {
 	assert(geometry1 != NULL);
 	assert(offset1 != NULL);
@@ -443,7 +443,7 @@ static bool intersects_circle_circle(geometry_t* geometry1, geometry_point_t* of
 	return dist > total_r;
 }
 
-static bool intersects_square_square(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
+static bool int_square_square(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
 {
 	assert(geometry1 != NULL);
 	assert(offset1 != NULL);
@@ -471,7 +471,7 @@ static bool intersects_square_square(geometry_t* geometry1, geometry_point_t* of
 	return x_intersects && y_intersects;
 }
 
-static bool intersects_point_lineseg(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geomtry2, geometry_point_t* offset2)
+static bool int_point_lineseg(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geomtry2, geometry_point_t* offset2)
 {
 	return false;
 }
@@ -484,6 +484,16 @@ static bool int_point_circle(geometry_t* geometry1, geometry_point_t* offset1, g
 static bool int_point_square(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
 {
 	return false;
+}
+
+static bool int_lineseg_circle(geometry_t* geometry, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
+{
+  return false;
+}
+
+static bool int_lineseg_square(geometry_t* geometry, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
+{
+  return false;
 }
 
 static bool int_circle_square(geometry_t* geometry1, geometry_point_t* offset1, geometry_t* geometry2, geometry_point_t* offset2)
