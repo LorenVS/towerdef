@@ -1,4 +1,6 @@
 #include<assert.h>
+#include<stdint.h>
+#include<stdio.h>
 #include<stdlib.h>
 
 #include "util.h"
@@ -48,7 +50,7 @@ tower_basic_t*  tower_basic_new(geometry_point_t* position)
   return basic;
 }
 
-void            tower_basic_delete(tower_t* tower)
+void            tower_basic_delete(tower_basic_t* tower)
 {
   assert(tower != NULL);
   geometry_point_destroy(&tower->base.position);

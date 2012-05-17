@@ -12,8 +12,6 @@ typedef struct  path_s        path_t;
 typedef struct  program_s     program_t;
 typedef struct  wave_s        wave_t;
 typedef struct  spawn_s       spawn_t;
-typedef enum    tile_type_e   tile_type_t;
-typedef struct  tile_s        tile_t;
 typedef enum    creep_type_e  creep_type_t;
 typedef struct  creep_s       creep_t;
 typedef enum    bullet_type_e bullet_type_t;
@@ -22,12 +20,6 @@ typedef struct  bullet_s      bullet_t;
 // -------------
 // --- Enums ---
 // -------------
-
-/// The possible types of tile
-enum tile_type_e
-{
-	TILE_TYPE_GRASS ///< A grass tile
-};
 
 /// The possible types of creep
 enum creep_type_e
@@ -136,16 +128,6 @@ void    spawn_load(spawn_t* spawn, reader_t* reader);
 
 /// Deletes a spawn object, freeing all resources associated with it
 void    spawn_delete(spawn_t* spawn);
-
-// ------------
-// --- Tile ---
-// ------------
-
-/// A single tile on a map
-struct tile_s
-{
-  tile_type_t   tile_type;  ///< The type of tile
-};
 
 // -------------
 // --- Creep ---

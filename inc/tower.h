@@ -1,6 +1,8 @@
 #ifndef _towers_h
 #define _towers_h
 
+/** @file */
+
 // ----------------------------
 // --- Forward Declarations ---
 // ----------------------------
@@ -26,7 +28,7 @@ enum tower_type_e
 struct tower_s
 {
   tower_type_t      tower_type;   ///< The type of tower
-  goemetry_point_t  position;     ///< The position of the tower
+  geometry_point_t  position;     ///< The position of the tower
   geometry_t*       shape;        ///< The shape of the tower
 };
 
@@ -46,7 +48,7 @@ struct tower_basic_s
 tower_basic_t*  tower_basic_new(geometry_point_t* position);
 
 /// Deletes a basic tower object
-void            tower_basic_delete(tower_t* tower);
+void            tower_basic_delete(tower_basic_t* tower);
 
 
 

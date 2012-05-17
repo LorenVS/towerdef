@@ -4,9 +4,12 @@
 #include<GL/glut.h>
 
 #include "util.h"
+#include "geometry.h"
 #include "texture.h"
+#include "tile.h"
+#include "tower.h"
+#include "towerdef.h"
 #include "window.h"
-
 
 texture_t* texture;
 
