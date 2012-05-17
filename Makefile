@@ -13,12 +13,12 @@ DOCDIR=docs
 RESDIR=res
 
 # file lists
-SOURCES_RAW=geometry.c main.c texture.c tile.c tower.c towerdef.c window.c
+SOURCES_RAW=creep.c geometry.c main.c map.c texture.c tile.c tower.c towerdef.c window.c
 SOURCES=$(addprefix $(SRCDIR)/, $(SOURCES_RAW))
 DEPS=$(subst $(SRCDIR)/,$(DEPDIR)/,$(SOURCES:.c=.d))
 OBJS=$(subst $(SRCDIR)/,$(OBJDIR)/,$(SOURCES:.c=.o))
 
-HEADERS_RAW=geometry.h texture.h tile.h tower.h towerdef.h window.h util.h
+HEADERS_RAW=creep.h geometry.h map.h texture.h tile.h tower.h towerdef.h window.h util.h
 HEADERS=$(addprefix $(INCDIR)/, $(HEADERS_RAW))
 
 # main targets

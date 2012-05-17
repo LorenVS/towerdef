@@ -15,6 +15,7 @@
 static void window_enable_2d();
 static void window_disable_2d();
 static void window_draw();
+static void window_idle();
 
 // ------------------------
 // --- Public Functions ---
@@ -49,6 +50,7 @@ void window_run(window_t* window, int* argc, char** argv)
 	glutInitWindowSize(window->width, window->height);
   glutCreateWindow(window->title);
   glutDisplayFunc(window->draw_cb);
+  glutIdleFunc(window_idle);
 
   // enable alpha blending
   glEnable(GL_BLEND);
@@ -99,4 +101,9 @@ static void window_draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glutSwapBuffers();
+}
+
+static void window_idle()
+{
+  glutPostRedisplay();
 }

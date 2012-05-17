@@ -144,12 +144,12 @@ void texture_draw(texture_t* texture, int x, int y)
 
   glBegin(GL_QUADS);
     glTexCoord2f(0.0, 0.0);
-      glVertex2f(0.0, 0.0);
+      glVertex2f(x, y);
     glTexCoord2f(0.0, 1.0);
-      glVertex2f(0.0, texture->height);
+      glVertex2f(x, y + texture->height);
     glTexCoord2f(1.0, 1.0);
-      glVertex2f(texture->width, texture->height);
+      glVertex2f(x + texture->width, y + texture->height);
     glTexCoord2f(1.0, 0.0);
-      glVertex2f(texture->width, 0.0);
+      glVertex2f(x + texture->width, y);
   glEnd();
 }

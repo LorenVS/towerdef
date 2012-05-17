@@ -4,6 +4,11 @@
 #include<stdlib.h>
 #include<string.h>
 
+#include<GL/gl.h>
+#include<GL/glu.h>
+#include<GL/glut.h>
+
+#include "util.h"
 #include "geometry.h"
 #include "texture.h"
 #include "tile.h"
@@ -48,7 +53,7 @@ tile_t* map_get_tile(map_t* map, int32_t x, int32_t y)
   assert(x >= 0 && x < map->width);
   assert(y >= 0 && y < map->height);
 
-  return map->tiles[x][y];
+  return map->tiles[y * map->width + x];
 }
 
 void map_set_tile(map_t* map, int32_t x, int32_t y, tile_t* tile)
@@ -57,5 +62,5 @@ void map_set_tile(map_t* map, int32_t x, int32_t y, tile_t* tile)
   assert(x >= 0 && x < map->width);
   assert(y >= 0 && y < map->height);
   
-  map->tiles[x][y] = tile;
+  map->tiles[y * map->width + x] = tile;
 }

@@ -11,7 +11,7 @@
 #define WINDOW_DEFAULT_WIDTH  800
 
 /// the default height of the window
-#define WINDOW_DEFAULT_HEIGHT 600
+#define WINDOW_DEFAULT_HEIGHT 800
 
 /// The default title of the window
 #define WINDOW_DEFAULT_TITLE "Tower Defence"

@@ -11,8 +11,6 @@ typedef struct  path_s        path_t;
 typedef struct  program_s     program_t;
 typedef struct  wave_s        wave_t;
 typedef struct  spawn_s       spawn_t;
-typedef enum    creep_type_e  creep_type_t;
-typedef struct  creep_s       creep_t;
 typedef enum    bullet_type_e bullet_type_t;
 typedef struct  bullet_s      bullet_t;
 
@@ -20,11 +18,6 @@ typedef struct  bullet_s      bullet_t;
 // --- Enums ---
 // -------------
 
-/// The possible types of creep
-enum creep_type_e
-{
-	CREEP_TYPE_BASIC ///< A basic creep
-};
 
 /// The possible types of bullet
 enum bullet_type_e
@@ -93,7 +86,7 @@ void    wave_delete(wave_t* wave);
 struct spawn_s
 {
   int           delay;        ///< Time since the start of the wave
-  creep_type_t  creep_type;   ///< The type of creep to spawn
+  //creep_type_t  creep_type;   ///< The type of creep to spawn
   int           path;         ///< path to spawn the creep on
 };
 
@@ -105,19 +98,6 @@ void    spawn_load(spawn_t* spawn, reader_t* reader);
 
 /// Deletes a spawn object, freeing all resources associated with it
 void    spawn_delete(spawn_t* spawn);
-
-// -------------
-// --- Creep ---
-// -------------
-
-/// A single creep on a map
-struct creep_s
-{
-  creep_type_t    creep_type;   ///< The type of creep
-  path_t*         path;         ///< The path that the creep spawned on
-  int             x_coord;      ///< The current x coordinate of the creep
-  int             y_coord;      ///< The current y coordinate of the creep
-};
 
 // --------------
 // --- Bullet ---
