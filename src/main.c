@@ -77,11 +77,17 @@ int main(int argc, char** argv)
     creeps[i]->position.y = i * 100;
   }
 
+  log("Creating application window");
   window_t* window = window_new();
+
+  log("Initializing application window");
   window_init(window);
   window->draw_cb = draw_cb;
 
+  log("Running application window");
   window_run(window, &argc, argv);
+
+  log("Deleting application window");
   window_delete(window);
 
   return 0;
