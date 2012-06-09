@@ -61,4 +61,19 @@ void				reader_delete(reader_t* reader);
   } \
 }
 
+#ifdef LOGGING
+#define log(fmt) { printf(fmt); printf("\r\n"); }
+#else
+#define log(fmt) {}
+#endif
+
+#ifdef LOGGING
+#define logf(fmt, ...) { \
+  printf(fmt, __VA_ARGS__); \
+  printf("\r\n"); \
+}
+#else
+#define logf(fmt, ...) {}
+#endif
+
 #endif

@@ -1,6 +1,7 @@
 # compiler flags
 CC=gcc
-CFLAGS=-Iinc --std=c99 -O3
+DEFINES=-DLOGGING
+CFLAGS=-Iinc --std=c99 -O3 $(DEFINES)
 CLFLAGS=-lglut -lGLEW -lpng
 
 # directory settings
@@ -29,6 +30,7 @@ clean:
 	rm -f $(DEPS)
 	rm -f $(OBJS)
 	rm -rf $(DOCDIR)
+	rm -rf $(BINDIR)/*
 
 depend: $(DEPS)
 
