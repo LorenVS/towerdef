@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<GL/gl.h>
 #include<GL/glu.h>
-#include<GL/glut.h>
+#include<GL/glfw.h>
 
 #include "window.h"
 #include "util.h"
@@ -14,8 +14,6 @@
 
 static void window_enable_2d();
 static void window_disable_2d();
-static void window_draw();
-static void window_idle();
 
 // ------------------------
 // --- Public Functions ---
@@ -34,32 +32,25 @@ void window_init(window_t* window)
   window->width = WINDOW_DEFAULT_WIDTH;
   window->height = WINDOW_DEFAULT_HEIGHT;
   window->title = WINDOW_DEFAULT_TITLE;
-  window->draw_cb = window_draw;
+
+  glfwInit();
+  glfwOpenWindow(window->width, window->height, 0, 0, 0, 0, 0, 0, 0);
+  glfwSetWindowTitle(window->title);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  window_enable_2d();
 }
 
 void window_delete(window_t* window)
 {
   assert(window != NULL);
+
+  window_disable_2d();
+  glfwTerminate();
   free(window);
 }
 
-void window_run(window_t* window, int* argc, char** argv)
-{
-  glutInit(argc, argv);
-  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-	glutInitWindowSize(window->width, window->height);
-  glutCreateWindow(window->title);
-  glutDisplayFunc(window->draw_cb);
-  glutIdleFunc(window_idle);
-
-  // enable alpha blending
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  window_enable_2d();
-  glutMainLoop();
-  window_disable_2d();
-}
 
 // -------------------------
 // --- Private Functions ---
@@ -97,13 +88,3 @@ static void window_disable_2d()
   glPopMatrix();
 }
 
-static void window_draw()
-{
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glutSwapBuffers();
-}
-
-static void window_idle()
-{
-  glutPostRedisplay();
-}

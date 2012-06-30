@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<GL/gl.h>
 #include<GL/glu.h>
-#include<GL/glut.h>
+#include<GL/glfw.h>
 
 #include "util.h"
 #include "geometry.h"
@@ -19,10 +19,8 @@ map_t*      map;
 creep_t*    creeps[5];
 int frame = 0;
 
-void draw_cb(void)
+void draw()
 {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   for(int y = 0; y < height; y++)
   {
     for(int x = 0; x < width; x++)
@@ -56,7 +54,6 @@ void draw_cb(void)
 
   ++frame;
 
-  glutSwapBuffers();
 }
 
 int main(int argc, char** argv)
@@ -79,10 +76,16 @@ int main(int argc, char** argv)
 
   window_t* window = window_new();
   window_init(window);
-  window->draw_cb = draw_cb;
 
-  window_run(window, &argc, argv);
+  while(1) {
+    if(glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS)
+      break;
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    draw();
+    glfwSwapBuffers();
+  }
+
   window_delete(window);
-
   return 0;
 }

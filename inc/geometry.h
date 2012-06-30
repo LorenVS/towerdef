@@ -105,7 +105,6 @@ geometry_lineseg_t* geometry_lineseg_clone(geometry_lineseg_t* lineseg);
 /// Copies a lineseg object to another
 void geometry_lineseg_copy(geometry_lineseg_t* source, geometry_lineseg_t* dest);
 
-
 // --------------
 // --- Circle ---
 // --------------

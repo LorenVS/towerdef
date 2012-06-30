@@ -1,7 +1,7 @@
 # compiler flags
 CC=gcc
 CFLAGS=-Iinc --std=c99 -O3
-CLFLAGS=-lglut -lGLEW -lpng
+CLFLAGS=-lglfw -lGLEW -lpng
 
 # directory settings
 SRCDIR=src
