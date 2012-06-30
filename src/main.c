@@ -74,13 +74,16 @@ int main(int argc, char** argv)
     creeps[i]->position.y = i * 100;
   }
 
+  log("Creating application window");
   window_t* window = window_new();
+
+  log("Initializing application window");
   window_init(window);
 
   while(1) {
     if(glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS)
       break;
-
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     draw();
     glfwSwapBuffers();

@@ -1,7 +1,13 @@
 # compiler flags
 CC=gcc
+<<<<<<< HEAD
 CFLAGS=-Iinc --std=c99 -O3
 CLFLAGS=-lglfw -lGLEW -lpng
+=======
+DEFINES=-DLOGGING
+CFLAGS=-Iinc --std=c99 -O3 $(DEFINES)
+CLFLAGS=-lglut -lGLEW -lpng
+>>>>>>> 5c671799570dd286b1d996c626cd76a375ae6132
 
 # directory settings
 SRCDIR=src
@@ -29,6 +35,7 @@ clean:
 	rm -f $(DEPS)
 	rm -f $(OBJS)
 	rm -rf $(DOCDIR)
+	rm -rf $(BINDIR)/*
 
 depend: $(DEPS)
 
