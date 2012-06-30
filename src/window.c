@@ -34,7 +34,7 @@ void window_init(window_t* window)
   window->title = WINDOW_DEFAULT_TITLE;
 
   die(glfwInit() != GL_TRUE, "Failed to initialize glfw");
-  die(glfwOpenWindow(window->width, window->height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW) != GL_TRUE,
+  die(glfwOpenWindow(window->width, window->height, 5, 6, 5, 0, 0, 0, GLFW_WINDOW) != GL_TRUE,
     "Failed to open glfw window");
   glfwSetWindowTitle(window->title);
 
