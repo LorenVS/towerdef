@@ -34,7 +34,7 @@ void window_init(window_t* window)
   window->title = WINDOW_DEFAULT_TITLE;
 
   glfwInit();
-  glfwOpenWindow(window->width, window->height, 0, 0, 0, 0, 0, 0, 0);
+  glfwOpenWindow(window->width, window->height, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
   glfwSetWindowTitle(window->title);
 
   glEnable(GL_BLEND);
