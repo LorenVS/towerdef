@@ -33,8 +33,9 @@ void window_init(window_t* window)
   window->height = WINDOW_DEFAULT_HEIGHT;
   window->title = WINDOW_DEFAULT_TITLE;
 
-  glfwInit();
-  glfwOpenWindow(window->width, window->height, 0, 0, 0, 0, 0, 0, GLFW_WINDOW);
+  die(glfwInit() != GL_TRUE, "Failed to initialize glfw");
+  die(glfwOpenWindow(window->width, window->height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW) != GL_TRUE,
+    "Failed to open glfw window");
   glfwSetWindowTitle(window->title);
 
   glEnable(GL_BLEND);
