@@ -1,6 +1,5 @@
 # compiler flags
 CC=gcc
-<<<<<<< HEAD
 CFLAGS=-Iinc --std=c99 -O3
 CLFLAGS=-lglfw -lGLEW -lpng
 DEFINES=-DLOGGING
